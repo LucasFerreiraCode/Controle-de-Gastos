@@ -5,13 +5,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Controle de Gastos</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: sans-serif;
             padding: 2rem;
-            max-width: 1000px;
+            max-width: 800px;
             margin: auto;
-            background: linear-gradient(to right, #313438, #6580a1);
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
             color: #ffffff;
         }
 
@@ -20,27 +23,28 @@
             text-align: center;
         }
 
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
         .input-group,
-        .meta-group,
-        .weekly-group {
+        .meta-group {
             background-color: #1e40af;
             padding: 1rem;
             border-radius: 10px;
             margin-bottom: 1.5rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .input-group,
-        .meta-group,
-        .weekly-group {
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
 
         input,
-        button,
-        select {
+        select,
+        button {
             padding: 0.75rem;
             font-size: 16px;
             border-radius: 6px;
@@ -115,34 +119,34 @@
 <body>
     <h1>Controle de Gastos</h1>
 
-    <div class="meta-group">
-        <input id="goal" type="number" placeholder="Meta de economia (R$)" />
-        <input id="income" type="number" placeholder="Ganhos totais (R$)" />
-        <button onclick="updateMeta()">Atualizar Metas</button>
+    <div class="flex-container">
+        <div class="meta-group">
+            <input id="goal" type="number" placeholder="Meta de economia (R$)" />
+            <input id="income" type="number" placeholder="Ganhos totais (R$)" />
+            <button onclick="updateMeta()">Atualizar Metas</button>
+        </div>
+
+        <div class="input-group">
+            <input id="description" type="text" placeholder="Descrição" />
+            <input id="amount" type="number" placeholder="Valor do Gasto" />
+            <select id="category">
+                <option value="Compras para casa">Compras para casa</option>
+                <option value="Cosméticos">Cosméticos</option>
+                <option value='"Pizza, lanches, doces"'>"Pizza, lanches, doces"</option>
+                <option value="Contas">Contas</option>
+                <option value="Outros">Outros</option>
+            </select>
+            <button onclick="addExpense()">Adicionar Gasto</button>
+        </div>
     </div>
 
-    <div class="input-group">
-        <input id="description" type="text" placeholder="Descrição" />
-        <input id="amount" type="number" placeholder="Valor do Gasto" />
-        <select id="weekday">
-            <option value="Segunda">Segunda</option>
-            <option value="Terça">Terça</option>
-            <option value="Quarta">Quarta</option>
-            <option value="Quinta">Quinta</option>
-            <option value="Sexta">Sexta</option>
-            <option value="Sábado">Sábado</option>
-            <option value="Domingo">Domingo</option>
-        </select>
-        <button onclick="addExpense()">Adicionar Gasto</button>
-    </div>
-
-    <h2>Gastos Semanais</h2>
+    <h2>Lista de Gastos</h2>
     <table id="expense-table">
         <thead>
             <tr>
-                <th>Dia</th>
                 <th>Descrição</th>
                 <th>Valor</th>
+                <th>Categoria</th>
                 <th>Ação</th>
             </tr>
         </thead>
@@ -151,16 +155,20 @@
 
     <div class="total" id="total-display">Total de Gastos: R$ 0,00</div>
     <div class="goal-display" id="goal-display">Meta: R$ 0,00 | Ganhos: R$ 0,00 | Poupança Esperada: R$ 0,00</div>
+    <div class="total" id="monthly-summary">Resumo Mensal: </div>
+
+    <canvas id="chart" width="400" height="200"></canvas>
 
     <button class="floating-btn" onclick="scrollToTop()">Topo</button>
 
     <script>
         const descriptionInput = document.getElementById('description');
         const amountInput = document.getElementById('amount');
-        const weekdayInput = document.getElementById('weekday');
+        const categoryInput = document.getElementById('category');
         const expenseTable = document.querySelector('#expense-table tbody');
         const totalDisplay = document.getElementById('total-display');
         const goalDisplay = document.getElementById('goal-display');
+        const monthlySummary = document.getElementById('monthly-summary');
         const goalInput = document.getElementById('goal');
         const incomeInput = document.getElementById('income');
 
@@ -168,10 +176,39 @@
         let goal = 0;
         let income = 0;
 
+        const chartCanvas = document.getElementById('chart').getContext('2d');
+        const chartData = {
+            labels: ['Compras para casa', 'Cosméticos', '"Pizza, lanches, doces"', 'Contas', 'Outros'],
+            datasets: [{
+                label: 'Gastos por Categoria',
+                data: [0, 0, 0, 0, 0],
+                backgroundColor: ['#f87171', '#facc15', '#34d399', '#60a5fa', '#a78bfa']
+            }]
+        };
+        const chart = new Chart(chartCanvas, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        function updateChart(category, amount) {
+            const index = chartData.labels.indexOf(category);
+            if (index !== -1) {
+                chartData.datasets[0].data[index] += amount;
+                chart.update();
+            }
+        }
+
         function updateTotal() {
             totalDisplay.textContent = `Total de Gastos: R$ ${total.toFixed(2)}`;
             const saving = income - total;
             goalDisplay.textContent = `Meta: R$ ${goal.toFixed(2)} | Ganhos: R$ ${income.toFixed(2)} | Poupança Esperada: R$ ${saving.toFixed(2)}`;
+            monthlySummary.textContent = `Gastos Mensais: R$ ${total.toFixed(2)} | Poupança: R$ ${saving.toFixed(2)} | Meta: R$ ${goal.toFixed(2)}`;
         }
 
         function updateMeta() {
@@ -180,29 +217,33 @@
             updateTotal();
         }
 
-        function removeExpense(amount, row) {
+        function removeExpense(amount, row, category) {
             total -= amount;
+            updateChart(category, -amount);
             updateTotal();
             expenseTable.removeChild(row);
+            saveData();
         }
 
         function addExpense() {
             const description = descriptionInput.value.trim();
             const amount = parseFloat(amountInput.value);
-            const weekday = weekdayInput.value;
+            const category = categoryInput.value;
             if (!description || isNaN(amount)) return;
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${weekday}</td>
-                <td>${description}</td>
-                <td>R$ ${amount.toFixed(2)}</td>
-                <td><button class="remove-btn" onclick="removeExpense(${amount}, this.closest('tr'))">Remover</button></td>
-            `;
+        <td>${description}</td>
+        <td>R$ ${amount.toFixed(2)}</td>
+        <td>${category}</td>
+        <td><button class="remove-btn" onclick="removeExpense(${amount}, this.closest('tr'), '${category}')">Remover</button></td>
+      `;
             expenseTable.appendChild(row);
 
             total += amount;
+            updateChart(category, amount);
             updateTotal();
+            saveData();
 
             descriptionInput.value = '';
             amountInput.value = '';
@@ -210,6 +251,23 @@
 
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function saveData() {
+            localStorage.setItem('expenses', expenseTable.innerHTML);
+            localStorage.setItem('total', total);
+        }
+
+        window.onload = () => {
+            expenseTable.innerHTML = localStorage.getItem('expenses') || '';
+            total = parseFloat(localStorage.getItem('total')) || 0;
+            updateTotal();
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker registrado'))
+                .catch(error => console.error('Erro ao registrar o Service Worker:', error));
         }
     </script>
 </body>
