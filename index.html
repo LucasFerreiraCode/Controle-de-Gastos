@@ -82,6 +82,26 @@
             font-weight: bold;
         }
 
+        .floating-info {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .info-box {
+            background-color: #1e3a8a;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -105,14 +125,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
-        .total,
-        .goal-display {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 1rem;
-        }
     </style>
 </head>
 
@@ -127,12 +139,11 @@
         </div>
 
         <div class="input-group">
-            <input id="description" type="text" placeholder="Descrição" />
             <input id="amount" type="number" placeholder="Valor do Gasto" />
             <select id="category">
                 <option value="Compras para casa">Compras para casa</option>
                 <option value="Cosméticos">Cosméticos</option>
-                <option value='"Pizza, lanches, doces"'>"Pizza, lanches, doces"</option>
+                <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
                 <option value="Contas">Contas</option>
                 <option value="Outros">Outros</option>
             </select>
@@ -144,7 +155,6 @@
     <table id="expense-table">
         <thead>
             <tr>
-                <th>Descrição</th>
                 <th>Valor</th>
                 <th>Categoria</th>
                 <th>Ação</th>
@@ -153,21 +163,30 @@
         <tbody></tbody>
     </table>
 
-    <div class="total" id="total-display">Total de Gastos: R$ 0,00</div>
-    <div class="goal-display" id="goal-display">Meta: R$ 0,00 | Ganhos: R$ 0,00 | Poupança Esperada: R$ 0,00</div>
-    <div class="total" id="monthly-summary">Resumo Mensal: </div>
+    <div class="floating-info">
+        <div class="info-box" id="total-display">Total de Gastos: R$ 0,00</div>
+        <div class="info-box" id="goal-display">Meta: R$ 0,00</div>
+        <div class="info-box" id="income-display">Ganhos: R$ 0,00</div>
+        <div class="info-box" id="saving-display">Poupança Esperada: R$ 0,00</div>
+        <div class="info-box" id="monthly-summary">Resumo Mensal:</div>
+    </div>
 
+    <h2>Gastos por Categoria</h2>
     <canvas id="chart" width="400" height="200"></canvas>
+    <h2>Gastos por Dia da Semana</h2>
+    <canvas id="chart-dia" width="400" height="200"></canvas>
 
     <button class="floating-btn" onclick="scrollToTop()">Topo</button>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const descriptionInput = document.getElementById('description');
         const amountInput = document.getElementById('amount');
         const categoryInput = document.getElementById('category');
         const expenseTable = document.querySelector('#expense-table tbody');
         const totalDisplay = document.getElementById('total-display');
         const goalDisplay = document.getElementById('goal-display');
+        const incomeDisplay = document.getElementById('income-display');
+        const savingDisplay = document.getElementById('saving-display');
         const monthlySummary = document.getElementById('monthly-summary');
         const goalInput = document.getElementById('goal');
         const incomeInput = document.getElementById('income');
@@ -177,22 +196,44 @@
         let income = 0;
 
         const chartCanvas = document.getElementById('chart').getContext('2d');
+        const chartDiaCanvas = document.getElementById('chart-dia').getContext('2d');
+
+        const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+        const gastosPorDia = new Array(7).fill(0);
+
+        const chartDataDia = {
+            labels: diasDaSemana,
+            datasets: [{
+                label: 'Gastos por Dia da Semana',
+                data: gastosPorDia,
+                backgroundColor: '#fbbf24'
+            }]
+        };
+
+        const chartDia = new Chart(chartDiaCanvas, {
+            type: 'bar',
+            data: chartDataDia,
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } }
+            }
+        });
+
         const chartData = {
-            labels: ['Compras para casa', 'Cosméticos', '"Pizza, lanches, doces"', 'Contas', 'Outros'],
+            labels: ['Compras para casa', 'Cosméticos', 'Pizza, lanches, doces', 'Contas', 'Outros'],
             datasets: [{
                 label: 'Gastos por Categoria',
                 data: [0, 0, 0, 0, 0],
                 backgroundColor: ['#f87171', '#facc15', '#34d399', '#60a5fa', '#a78bfa']
             }]
         };
+
         const chart = new Chart(chartCanvas, {
             type: 'bar',
             data: chartData,
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: false }
-                }
+                plugins: { legend: { display: false } }
             }
         });
 
@@ -204,10 +245,18 @@
             }
         }
 
+        function updateChartPorDia(amount) {
+            const dia = new Date().getDay();
+            gastosPorDia[dia] += amount;
+            chartDia.update();
+        }
+
         function updateTotal() {
             totalDisplay.textContent = `Total de Gastos: R$ ${total.toFixed(2)}`;
             const saving = income - total;
-            goalDisplay.textContent = `Meta: R$ ${goal.toFixed(2)} | Ganhos: R$ ${income.toFixed(2)} | Poupança Esperada: R$ ${saving.toFixed(2)}`;
+            goalDisplay.textContent = `Meta: R$ ${goal.toFixed(2)}`;
+            incomeDisplay.textContent = `Ganhos: R$ ${income.toFixed(2)}`;
+            savingDisplay.textContent = `Poupança Esperada: R$ ${saving.toFixed(2)}`;
             monthlySummary.textContent = `Gastos Mensais: R$ ${total.toFixed(2)} | Poupança: R$ ${saving.toFixed(2)} | Meta: R$ ${goal.toFixed(2)}`;
         }
 
@@ -226,26 +275,24 @@
         }
 
         function addExpense() {
-            const description = descriptionInput.value.trim();
             const amount = parseFloat(amountInput.value);
             const category = categoryInput.value;
-            if (!description || isNaN(amount)) return;
+            if (isNaN(amount)) return;
 
             const row = document.createElement('tr');
             row.innerHTML = `
-        <td>${description}</td>
-        <td>R$ ${amount.toFixed(2)}</td>
-        <td>${category}</td>
-        <td><button class="remove-btn" onclick="removeExpense(${amount}, this.closest('tr'), '${category}')">Remover</button></td>
-      `;
+                <td>R$ ${amount.toFixed(2)}</td>
+                <td>${category}</td>
+                <td><button class="remove-btn" onclick="removeExpense(${amount}, this.closest('tr'), '${category}')">Remover</button></td>
+            `;
             expenseTable.appendChild(row);
 
             total += amount;
             updateChart(category, amount);
+            updateChartPorDia(amount);
             updateTotal();
             saveData();
 
-            descriptionInput.value = '';
             amountInput.value = '';
         }
 
@@ -262,12 +309,6 @@
             expenseTable.innerHTML = localStorage.getItem('expenses') || '';
             total = parseFloat(localStorage.getItem('total')) || 0;
             updateTotal();
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(() => console.log('Service Worker registrado'))
-                .catch(error => console.error('Erro ao registrar o Service Worker:', error));
         }
     </script>
 </body>
