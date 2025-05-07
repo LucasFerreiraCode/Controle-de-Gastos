@@ -22,7 +22,7 @@
                     class="w-full p-2 rounded mb-2 text-gray-800">
                 <input id="income" type="number" placeholder="Ganhos totais (R$)"
                     class="w-full p-2 rounded mb-2 text-gray-800">
-                <button onclick="updateMeta()"
+                <button id="update-meta-btn"
                     class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white">Atualizar Metas</button>
             </div>
 
@@ -38,7 +38,7 @@
                     <option value="Contas">Contas</option>
                     <option value="Outros">Outros</option>
                 </select>
-                <button onclick="addExpense()"
+                <button id="add-expense-btn"
                     class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white">Adicionar Gasto</button>
             </div>
         </div>
@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <button onclick="scrollToTop()"
+    <button id="scroll-top-btn"
         class="fixed bottom-4 right-4 bg-blue-700 text-white p-3 rounded-full shadow-lg">&#8593;</button>
 
     <script>

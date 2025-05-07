@@ -1,55 +1,100 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Função para limpar dados corrompidos
+    function clearCorruptedData() {
+        try {
+            JSON.parse(localStorage.getItem('expenses'));
+        } catch (e) {
+            localStorage.removeItem('expenses');
+        }
+    }
+
+    clearCorruptedData();
+
+    // Inicializa variáveis
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let goal = parseFloat(localStorage.getItem('goal')) || 0;
     let income = parseFloat(localStorage.getItem('income')) || 0;
-
     let chart, chartDia;
 
+    // Função principal para salvar e renderizar
     function saveAndRender() {
-        localStorage.setItem('expenses', JSON.stringify(expenses));
-        renderExpenses();
-        updateDisplays();
-        updateCharts();
+        try {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            renderExpenses();
+            updateDisplays();
+            updateCharts();
+        } catch (e) {
+            console.error("Erro ao salvar dados:", e);
+        }
     }
 
+    // Adicionar nova despesa
     function addExpense() {
         const amount = parseFloat(document.getElementById('amount').value);
         const date = document.getElementById('date').value;
         const category = document.getElementById('category').value;
 
-        if (!amount || !date || !category) return;
+        if (!amount || isNaN(amount) || !date || !category) {
+            alert("Por favor, preencha todos os campos corretamente!");
+            return;
+        }
 
         expenses.push({ amount, date, category });
         saveAndRender();
+
+        // Limpa os campos
+        document.getElementById('amount').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('category').value = 'Compras para casa';
     }
 
+    // Atualizar metas
     function updateMeta() {
-        goal = parseFloat(document.getElementById('goal').value) || 0;
-        income = parseFloat(document.getElementById('income').value) || 0;
+        const newGoal = parseFloat(document.getElementById('goal').value) || 0;
+        const newIncome = parseFloat(document.getElementById('income').value) || 0;
+
+        goal = newGoal;
+        income = newIncome;
+
         localStorage.setItem('goal', goal);
         localStorage.setItem('income', income);
         updateDisplays();
     }
 
+    // Remover despesa
     function deleteExpense(index) {
-        expenses.splice(index, 1);
-        saveAndRender();
+        if (confirm("Tem certeza que deseja remover esta despesa?")) {
+            expenses.splice(index, 1);
+            saveAndRender();
+        }
     }
 
+    // Renderizar tabela de despesas
     function renderExpenses() {
         const table = document.getElementById('expense-table');
         table.innerHTML = '';
+
         expenses.forEach((exp, i) => {
-            const row = `<tr>
-      <td class="p-2">R$ ${exp.amount.toFixed(2)}</td>
-      <td class="p-2">${exp.category}</td>
-      <td class="p-2">${exp.date}</td>
-      <td class="p-2"><button onclick="deleteExpense(${i})" class="text-red-500">Remover</button></td>
-    </tr>`;
-            table.innerHTML += row;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="p-2">R$ ${exp.amount.toFixed(2)}</td>
+                <td class="p-2">${exp.category}</td>
+                <td class="p-2">${exp.date}</td>
+                <td class="p-2"><button data-index="${i}" class="delete-btn text-red-500">Remover</button></td>
+            `;
+            table.appendChild(row);
+        });
+
+        // Adiciona eventos aos botões de remover
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const index = parseInt(this.getAttribute('data-index'));
+                deleteExpense(index);
+            });
         });
     }
 
+    // Atualizar displays de resumo
     function updateDisplays() {
         const total = expenses.reduce((acc, e) => acc + e.amount, 0);
         const saving = income - total;
@@ -60,10 +105,12 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('saving-display').textContent = `Poupança Esperada: R$ ${saving.toFixed(2)}`;
     }
 
+    // Rolagem para o topo
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Atualizar gráficos
     function updateCharts() {
         const categoryMap = {};
         const dailyMap = {};
@@ -92,7 +139,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }]
             },
             options: {
-                responsive: true
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
             }
         });
 
@@ -106,16 +158,31 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: dateValues,
                     borderColor: '#ffffff',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    tension: 0.3
+                    tension: 0.3,
+                    fill: true
                 }]
             },
             options: {
-                responsive: true
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
     }
 
+    // Adiciona eventos
+    document.getElementById('add-expense-btn').addEventListener('click', addExpense);
+    document.getElementById('update-meta-btn').addEventListener('click', updateMeta);
+    document.getElementById('scroll-top-btn').addEventListener('click', scrollToTop);
+
+    // Carrega dados iniciais
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+
     renderExpenses();
     updateDisplays();
     updateCharts();
-});  
+});
