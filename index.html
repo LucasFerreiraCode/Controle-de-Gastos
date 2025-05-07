@@ -7,310 +7,83 @@
     <title>Controle de Gastos</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 2rem;
-            max-width: 800px;
-            margin: auto;
-            background: linear-gradient(to right, #3b82f6, #60a5fa);
-            color: #ffffff;
-        }
-
-        h1,
-        h2 {
-            text-align: center;
-        }
-
-        .flex-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .input-group,
-        .meta-group {
-            background-color: #1e40af;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        input,
-        select,
-        button {
-            padding: 0.75rem;
-            font-size: 16px;
-            border-radius: 6px;
-        }
-
-        input,
-        select {
-            border: 1px solid #d1d5db;
-        }
-
-        button {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #059669;
-            transform: scale(1.05);
-        }
-
-        .floating-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2563eb;
-            color: white;
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            font-weight: bold;
-        }
-
-        .floating-info {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .info-box {
-            background-color: #1e3a8a;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background-color: white;
-            color: #1f2937;
-        }
-
-        th,
-        td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .remove-btn {
-            background-color: #ef4444;
-            border: none;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
 </head>
 
-<body>
-    <h1>Controle de Gastos</h1>
+<body class="bg-gradient-to-r from-blue-500 to-blue-400 text-white min-h-screen p-4">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-6">Controle de Gastos</h1>
 
-    <div class="flex-container">
-        <div class="meta-group">
-            <input id="goal" type="number" placeholder="Meta de economia (R$)" />
-            <input id="income" type="number" placeholder="Ganhos totais (R$)" />
-            <button onclick="updateMeta()">Atualizar Metas</button>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-2">Metas</h2>
+                <input id="goal" type="number" placeholder="Meta de economia (R$)"
+                    class="w-full p-2 rounded mb-2 text-gray-800">
+                <input id="income" type="number" placeholder="Ganhos totais (R$)"
+                    class="w-full p-2 rounded mb-2 text-gray-800">
+                <button onclick="updateMeta()"
+                    class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white">Atualizar Metas</button>
+            </div>
+
+            <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-2">Novo Gasto</h2>
+                <input id="amount" type="number" placeholder="Valor do Gasto"
+                    class="w-full p-2 rounded mb-2 text-gray-800">
+                <input id="date" type="date" class="w-full p-2 rounded mb-2 text-gray-800">
+                <select id="category" class="w-full p-2 rounded mb-2 text-gray-800">
+                    <option value="Compras para casa">Compras para casa</option>
+                    <option value="Cosméticos">Cosméticos</option>
+                    <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
+                    <option value="Contas">Contas</option>
+                    <option value="Outros">Outros</option>
+                </select>
+                <button onclick="addExpense()"
+                    class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white">Adicionar Gasto</button>
+            </div>
         </div>
 
-        <div class="input-group">
-            <input id="amount" type="number" placeholder="Valor do Gasto" />
-            <select id="category">
-                <option value="Compras para casa">Compras para casa</option>
-                <option value="Cosméticos">Cosméticos</option>
-                <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
-                <option value="Contas">Contas</option>
-                <option value="Outros">Outros</option>
-            </select>
-            <button onclick="addExpense()">Adicionar Gasto</button>
+        <div class="mt-8 bg-white text-gray-800 rounded-2xl overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-blue-700 text-white">
+                    <tr>
+                        <th class="p-2 text-left">Valor</th>
+                        <th class="p-2 text-left">Categoria</th>
+                        <th class="p-2 text-left">Data</th>
+                        <th class="p-2 text-left">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table"></tbody>
+            </table>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-8">
+            <div class="bg-blue-800 p-4 rounded-2xl">
+                <div id="total-display" class="font-bold mb-2">Total de Gastos: R$ 0,00</div>
+                <div id="goal-display" class="mb-2">Meta: R$ 0,00</div>
+                <div id="income-display" class="mb-2">Ganhos: R$ 0,00</div>
+                <div id="saving-display" class="mb-2">Poupança Esperada: R$ 0,00</div>
+                <div id="monthly-summary">Resumo Mensal:</div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <canvas id="chart"></canvas>
+                <canvas id="chart-dia"></canvas>
+            </div>
         </div>
     </div>
 
-    <h2>Lista de Gastos</h2>
-    <table id="expense-table">
-        <thead>
-            <tr>
-                <th>Valor</th>
-                <th>Categoria</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <button onclick="scrollToTop()"
+        class="fixed bottom-4 right-4 bg-blue-700 text-white p-3 rounded-full shadow-lg">&#8593;</button>
 
-    <div class="floating-info">
-        <div class="info-box" id="total-display">Total de Gastos: R$ 0,00</div>
-        <div class="info-box" id="goal-display">Meta: R$ 0,00</div>
-        <div class="info-box" id="income-display">Ganhos: R$ 0,00</div>
-        <div class="info-box" id="saving-display">Poupança Esperada: R$ 0,00</div>
-        <div class="info-box" id="monthly-summary">Resumo Mensal:</div>
-    </div>
-
-    <h2>Gastos por Categoria</h2>
-    <canvas id="chart" width="400" height="200"></canvas>
-    <h2>Gastos por Dia da Semana</h2>
-    <canvas id="chart-dia" width="400" height="200"></canvas>
-
-    <button class="floating-btn" onclick="scrollToTop()">Topo</button>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const amountInput = document.getElementById('amount');
-        const categoryInput = document.getElementById('category');
-        const expenseTable = document.querySelector('#expense-table tbody');
-        const totalDisplay = document.getElementById('total-display');
-        const goalDisplay = document.getElementById('goal-display');
-        const incomeDisplay = document.getElementById('income-display');
-        const savingDisplay = document.getElementById('saving-display');
-        const monthlySummary = document.getElementById('monthly-summary');
-        const goalInput = document.getElementById('goal');
-        const incomeInput = document.getElementById('income');
-
-        let total = 0;
-        let goal = 0;
-        let income = 0;
-
-        const chartCanvas = document.getElementById('chart').getContext('2d');
-        const chartDiaCanvas = document.getElementById('chart-dia').getContext('2d');
-
-        const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        const gastosPorDia = new Array(7).fill(0);
-
-        const chartDataDia = {
-            labels: diasDaSemana,
-            datasets: [{
-                label: 'Gastos por Dia da Semana',
-                data: gastosPorDia,
-                backgroundColor: '#fbbf24'
-            }]
-        };
-
-        const chartDia = new Chart(chartDiaCanvas, {
-            type: 'bar',
-            data: chartDataDia,
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } }
-            }
-        });
-
-        const chartData = {
-            labels: ['Compras para casa', 'Cosméticos', 'Pizza, lanches, doces', 'Contas', 'Outros'],
-            datasets: [{
-                label: 'Gastos por Categoria',
-                data: [0, 0, 0, 0, 0],
-                backgroundColor: ['#f87171', '#facc15', '#34d399', '#60a5fa', '#a78bfa']
-            }]
-        };
-
-        const chart = new Chart(chartCanvas, {
-            type: 'bar',
-            data: chartData,
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        function updateChart(category, amount) {
-            const index = chartData.labels.indexOf(category);
-            if (index !== -1) {
-                chartData.datasets[0].data[index] += amount;
-                chart.update();
-            }
-        }
-
-        function updateChartPorDia(amount) {
-            const dia = new Date().getDay();
-            gastosPorDia[dia] += amount;
-            chartDia.update();
-        }
-
-        function updateTotal() {
-            totalDisplay.textContent = `Total de Gastos: R$ ${total.toFixed(2)}`;
-            const saving = income - total;
-            goalDisplay.textContent = `Meta: R$ ${goal.toFixed(2)}`;
-            incomeDisplay.textContent = `Ganhos: R$ ${income.toFixed(2)}`;
-            savingDisplay.textContent = `Poupança Esperada: R$ ${saving.toFixed(2)}`;
-            monthlySummary.textContent = `Gastos Mensais: R$ ${total.toFixed(2)} | Poupança: R$ ${saving.toFixed(2)} | Meta: R$ ${goal.toFixed(2)}`;
-        }
-
-        function updateMeta() {
-            goal = parseFloat(goalInput.value) || 0;
-            income = parseFloat(incomeInput.value) || 0;
-            updateTotal();
-        }
-
-        function removeExpense(amount, row, category) {
-            total -= amount;
-            updateChart(category, -amount);
-            updateTotal();
-            expenseTable.removeChild(row);
-            saveData();
-        }
-
-        function addExpense() {
-            const amount = parseFloat(amountInput.value);
-            const category = categoryInput.value;
-            if (isNaN(amount)) return;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>R$ ${amount.toFixed(2)}</td>
-                <td>${category}</td>
-                <td><button class="remove-btn" onclick="removeExpense(${amount}, this.closest('tr'), '${category}')">Remover</button></td>
-            `;
-            expenseTable.appendChild(row);
-
-            total += amount;
-            updateChart(category, amount);
-            updateChartPorDia(amount);
-            updateTotal();
-            saveData();
-
-            amountInput.value = '';
-        }
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function saveData() {
-            localStorage.setItem('expenses', expenseTable.innerHTML);
-            localStorage.setItem('total', total);
-        }
-
-        window.onload = () => {
-            expenseTable.innerHTML = localStorage.getItem('expenses') || '';
-            total = parseFloat(localStorage.getItem('total')) || 0;
-            updateTotal();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker registrado'))
+                .catch(error => console.error('Erro no Service Worker:', error));
         }
     </script>
+    <script src="app.js"></script>
 </body>
 
 </html>

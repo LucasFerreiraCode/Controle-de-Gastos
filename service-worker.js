@@ -4,9 +4,12 @@ self.addEventListener('install', event => {
             return cache.addAll([
                 './',
                 './index.html',
+                './app.js',
                 './manifest.json',
                 './icon-192.png',
-                './icon-512.png'
+                './icon-512.png',
+                'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
+                'https://cdn.jsdelivr.net/npm/chart.js'
             ]);
         })
     );
