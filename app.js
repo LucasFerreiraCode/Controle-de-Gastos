@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const img = document.getElementById('status-image');
 
         if (type === 'success') {
-            img.src = './Robo-correto.png';
+            img.src = './img/Robo-correto.png';
         } else if (type === 'error') {
-            img.src = './Robo-erro.png';
+            img.src = './img/Robo-erro.png';
         }
 
         container.classList.remove('hidden');
