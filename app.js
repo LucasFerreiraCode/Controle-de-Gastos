@@ -1,4 +1,21 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Mostrar imagem de status
+    function showStatusImage(type) {
+        const container = document.getElementById('status-message');
+        const img = document.getElementById('status-image');
+
+        if (type === 'success') {
+            img.src = './Robo-correto.png';
+        } else if (type === 'error') {
+            img.src = './Robo-erro.png';
+        }
+
+        container.classList.remove('hidden');
+        setTimeout(() => {
+            container.classList.add('hidden');
+        }, 3000);
+    }
+
     // Função para limpar dados corrompidos
     function clearCorruptedData() {
         try {
@@ -35,12 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const category = document.getElementById('category').value;
 
         if (!amount || isNaN(amount) || !date || !category) {
-            alert("Por favor, preencha todos os campos corretamente!");
+            showStatusImage('error');
             return;
         }
 
         expenses.push({ amount, date, category });
         saveAndRender();
+
+        showStatusImage('success');
 
         // Limpa os campos
         document.getElementById('amount').value = '';
