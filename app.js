@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Mostrar imagem de status
+    // imagem de status
     function showStatusImage(type) {
         const container = document.getElementById('status-message');
         const img = document.getElementById('status-image');
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000);
     }
 
-    // Função para limpar dados corrompidos
+    //limpar dados
     function clearCorruptedData() {
         try {
             JSON.parse(localStorage.getItem('expenses'));
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let income = parseFloat(localStorage.getItem('income')) || 0;
     let chart, chartDia;
 
-    // Função principal para salvar e renderizar
+    // Função principal para salvar
     function saveAndRender() {
         try {
             localStorage.setItem('expenses', JSON.stringify(expenses));
