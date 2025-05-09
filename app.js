@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             renderExpenses();
             updateDisplays();
             updateCharts();
+            updateMonthlyChart(); // Chamada ao novo gráfico
         } catch (e) {
             console.error("Erro ao salvar dados:", e);
         }
@@ -186,6 +187,41 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function updateMonthlyChart() {
+        const ctx = document.getElementById('monthly-chart').getContext('2d');
+        const categoryMap = {};
+
+        expenses.forEach(exp => {
+            categoryMap[exp.category] = (categoryMap[exp.category] || 0) + exp.amount;
+        });
+
+        const categories = Object.keys(categoryMap);
+        const values = Object.values(categoryMap);
+
+        if (window.monthlyChart) window.monthlyChart.destroy();
+
+        window.monthlyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: categories,
+                datasets: [{
+                    label: 'Gastos por Categoria',
+                    data: values,
+                    backgroundColor: ['#60a5fa', '#38bdf8', '#818cf8', '#f472b6', '#facc15'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
     document.getElementById('add-expense-btn').addEventListener('click', addExpense);
     document.getElementById('update-meta-btn').addEventListener('click', updateMeta);
     document.getElementById('scroll-top-btn').addEventListener('click', scrollToTop);
@@ -196,4 +232,5 @@ document.addEventListener("DOMContentLoaded", function () {
     renderExpenses();
     updateDisplays();
     updateCharts();
+    updateMonthlyChart(); // Chamada ao novo gráfico
 });
