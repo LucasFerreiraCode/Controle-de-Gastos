@@ -1,22 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // imagem de status
-    function showStatusImage(type) {
-        const container = document.getElementById('status-message');
-        const img = document.getElementById('status-image');
+    function showToast(type) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        const isSuccess = type === 'success';
 
-        if (type === 'success') {
-            img.src = './img/Robo-correto.png';
-        } else if (type === 'error') {
-            img.src = './img/Robo-erro.png';
-        }
+        toast.className = `flex items-center gap-4 px-4 py-3 rounded-2xl shadow-lg text-gray-900 bg-white border-l-4 ${
+            isSuccess ? 'border-green-500' : 'border-red-500'
+        }`;
 
-        container.classList.remove('hidden');
-        setTimeout(() => {
-            container.classList.add('hidden');
-        }, 3000);
+        const imgSrc = isSuccess ? './img/Robo-correto.png' : './img/Robo-erro.png';
+        const message = isSuccess ? 'Gasto adicionado com sucesso!' : 'Por favor, preencha todos os campos.';
+
+        toast.innerHTML = `
+            <img src="${imgSrc}" alt="status" class="h-12">
+            <div class="flex flex-col">
+                <strong class="text-lg">${message}</strong>
+            </div>
+        `;
+
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    //limpar dados
     function clearCorruptedData() {
         try {
             JSON.parse(localStorage.getItem('expenses'));
@@ -27,13 +32,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     clearCorruptedData();
 
-    // Inicializa variáveis
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let goal = parseFloat(localStorage.getItem('goal')) || 0;
     let income = parseFloat(localStorage.getItem('income')) || 0;
     let chart, chartDia;
 
-    // Função principal para salvar
     function saveAndRender() {
         try {
             localStorage.setItem('expenses', JSON.stringify(expenses));
@@ -45,29 +48,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Adicionar nova despesa
     function addExpense() {
         const amount = parseFloat(document.getElementById('amount').value);
         const date = document.getElementById('date').value;
         const category = document.getElementById('category').value;
 
         if (!amount || isNaN(amount) || !date || !category) {
-            showStatusImage('error');
+            showToast('error');
             return;
         }
 
         expenses.push({ amount, date, category });
         saveAndRender();
 
-        showStatusImage('success');
+        showToast('success');
 
-        // Limpa os campos
         document.getElementById('amount').value = '';
         document.getElementById('date').value = '';
         document.getElementById('category').value = 'Compras para casa';
     }
 
-    // Atualizar metas
     function updateMeta() {
         const newGoal = parseFloat(document.getElementById('goal').value) || 0;
         const newIncome = parseFloat(document.getElementById('income').value) || 0;
@@ -80,7 +80,6 @@ document.addEventListener("DOMContentLoaded", function () {
         updateDisplays();
     }
 
-    // Remover despesa
     function deleteExpense(index) {
         if (confirm("Tem certeza que deseja remover esta despesa?")) {
             expenses.splice(index, 1);
@@ -88,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Renderizar tabela de despesas
     function renderExpenses() {
         const table = document.getElementById('expense-table');
         table.innerHTML = '';
@@ -104,7 +102,6 @@ document.addEventListener("DOMContentLoaded", function () {
             table.appendChild(row);
         });
 
-        // Adiciona eventos aos botões de remover
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 const index = parseInt(this.getAttribute('data-index'));
@@ -113,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Atualizar displays de resumo
     function updateDisplays() {
         const total = expenses.reduce((acc, e) => acc + e.amount, 0);
         const saving = income - total;
@@ -124,12 +120,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('saving-display').textContent = `Poupança Esperada: R$ ${saving.toFixed(2)}`;
     }
 
-    // Rolagem para o topo
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Atualizar gráficos
     function updateCharts() {
         const categoryMap = {};
         const dailyMap = {};
@@ -161,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: 'top'
                     }
                 }
             }
@@ -192,12 +186,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Adiciona eventos
     document.getElementById('add-expense-btn').addEventListener('click', addExpense);
     document.getElementById('update-meta-btn').addEventListener('click', updateMeta);
     document.getElementById('scroll-top-btn').addEventListener('click', scrollToTop);
 
-    // Carrega dados iniciais
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').value = today;
 
