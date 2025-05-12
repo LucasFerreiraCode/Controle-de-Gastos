@@ -69,37 +69,9 @@
             </table>
         </div>
 
-        <!-- Modern Dashboard Card -->
-        <div class="dashboard-card mt-8">
-            <div class="dashboard-row">
-                <span class="dashboard-icon animate-float"><img src="./img/money-svg.svg" alt="Total"></span>
-                <span class="dashboard-label">Total de Gastos</span>
-                <span id="total-display" class="dashboard-value">R$ 0,00</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-icon animate-float"><img src="./img/goal-svg.svg" alt="Meta"></span>
-                <span class="dashboard-label">Meta</span>
-                <span id="goal-display" class="dashboard-value">R$ 0,00</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-icon animate-float"><img src="./img/income-svg.svg" alt="Ganhos"></span>
-                <span class="dashboard-label">Ganhos</span>
-                <span id="income-display" class="dashboard-value">R$ 0,00</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-icon animate-float"><img src="/img/poupança-svg.svg" alt="Poupança"></span>
-                <span class="dashboard-label">Poupança Esperada</span>
-                <span id="saving-display" class="dashboard-value">R$ 0,00</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-icon animate-float"><img src="./img/calendar-svg.svg" alt="Resumo"></span>
-                <span class="dashboard-label">Resumo Mensal</span>
-                <span id="monthly-summary" class="dashboard-value"></span>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-4 mt-8">
-            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg">
+        <div class="grid md:grid-cols-2 gap-6 mt-8 items-stretch">
+            <!-- Painel Resumo Financeiro -->
+            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col">
                 <h2 class="text-2xl font-bold mb-4">Resumo Financeiro</h2>
                 <div class="flex items-center justify-between mb-2">
                     <span class="font-semibold">Total de Gastos:</span>
@@ -117,15 +89,16 @@
                     <span class="font-semibold">Poupança Esperada:</span>
                     <span id="saving-display" class="text-lg font-bold text-blue-400">R$ 0,00</span>
                 </div>
-                <div id="monthly-summary" class="mt-4">
+                <div id="monthly-summary" class="mt-4 flex-grow">
                     <h3 class="text-lg font-semibold mb-2">Resumo Mensal:</h3>
                     <canvas id="monthly-chart" class="w-full h-40"></canvas>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4">
-                <canvas id="chart"></canvas>
-                <canvas id="chart-dia"></canvas>
+            <!-- Painel com Gráficos -->
+            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col gap-4">
+                <canvas id="chart" class="bg-white rounded-xl p-2 flex-grow"></canvas>
+                <canvas id="chart-dia" class="bg-white rounded-xl p-2 flex-grow"></canvas>
             </div>
         </div>
     </div>
@@ -133,7 +106,6 @@
     <button id="scroll-top-btn"
         class="fixed bottom-4 right-4 bg-blue-700 text-white p-3 rounded-full shadow-lg">↑</button>
 
-    <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-6 right-6 flex flex-col gap-2 z-50"></div>
 
     <script>
