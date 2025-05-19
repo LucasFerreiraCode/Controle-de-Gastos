@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const validCategories = [
             "Aluguel", "Água/Luz", "Internet", "Streaming",
             "Compras para casa", "Cosméticos", "Pizza, lanches, doces",
-            "Contas", "Outros"
+            "Contas", "Gasolina", "Outros"
         ];
 
         const today = new Date().toISOString().split("T")[0];
