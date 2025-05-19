@@ -139,13 +139,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateDisplays() {
-        const total = filterExpenses().reduce((acc, e) => acc + e.amount, 0);
-        const saving = income - total;
-
-        document.getElementById('total-display').textContent = `Total de Gastos: R$ ${total.toFixed(2)}`;
-        document.getElementById('goal-display').textContent = `Meta: R$ ${goal.toFixed(2)}`;
-        document.getElementById('income-display').textContent = `Ganhos: R$ ${income.toFixed(2)}`;
-        document.getElementById('saving-display').textContent = `Poupança Esperada: R$ ${saving.toFixed(2)}`;
+        const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        document.getElementById('total-display').textContent = `R$ ${total.toFixed(2)}`;
+        document.getElementById('goal-display').textContent = `R$ ${goal.toFixed(2)}`;
+        document.getElementById('income-display').textContent = `R$ ${income.toFixed(2)}`;
+        document.getElementById('saving-display').textContent = `R$ ${(income - total).toFixed(2)}`;
     }
 
     function scrollToTop() {
