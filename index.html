@@ -23,6 +23,27 @@
 
         <h1 class="text-4xl font-bold text-center mb-6">Controle de Gastos</h1>
 
+        <!-- Filtros -->
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+            <input id="filter-start" type="date" class="p-2 rounded text-gray-800" placeholder="Data início">
+            <input id="filter-end" type="date" class="p-2 rounded text-gray-800" placeholder="Data fim">
+            <select id="filter-category" class="p-2 rounded text-gray-800">
+                <option value="Todas">Todas as Categorias</option>
+                <option value="Aluguel">Aluguel</option>
+                <option value="Água/Luz">Água/Luz</option>
+                <option value="Internet">Internet</option>
+                <option value="Streaming">Streaming</option>
+                <option value="Compras para casa">Compras para casa</option>
+                <option value="Cosméticos">Cosméticos</option>
+                <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
+                <option value="Contas">Contas</option>
+                <option value="Gasolina">Gasolina</option>
+                <option value="Outros">Outros</option>
+            </select>
+            <button id="export-btn" class="bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded">Exportar
+                JSON</button>
+        </div>
+
         <div class="grid md:grid-cols-2 gap-4">
             <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
                 <h2 class="text-xl font-semibold mb-2">Metas</h2>
@@ -48,6 +69,7 @@
                     <option value="Cosméticos">Cosméticos</option>
                     <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
                     <option value="Contas">Contas</option>
+                    <option value="Gasolina">Gasolina</option>
                     <option value="Outros">Outros</option>
                 </select>
                 <button id="add-expense-btn"
@@ -70,22 +92,21 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 mt-8 items-stretch">
-            <!-- Painel Resumo Financeiro -->
-            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col">
+            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col items-center text-center">
                 <h2 class="text-2xl font-bold mb-4">Resumo Financeiro</h2>
-                <div class="flex items-center justify-between mb-2">
+                <div class="mb-2">
                     <span class="font-semibold">Total de Gastos:</span>
                     <span id="total-display" class="text-lg font-bold text-red-400">R$ 0,00</span>
                 </div>
-                <div class="flex items-center justify-between mb-2">
+                <div class="mb-2">
                     <span class="font-semibold">Meta:</span>
                     <span id="goal-display" class="text-lg font-bold text-green-400">R$ 0,00</span>
                 </div>
-                <div class="flex items-center justify-between mb-2">
+                <div class="mb-2">
                     <span class="font-semibold">Ganhos:</span>
                     <span id="income-display" class="text-lg font-bold text-yellow-400">R$ 0,00</span>
                 </div>
-                <div class="flex items-center justify-between mb-4">
+                <div class="mb-4">
                     <span class="font-semibold">Poupança Esperada:</span>
                     <span id="saving-display" class="text-lg font-bold text-blue-400">R$ 0,00</span>
                 </div>
@@ -95,7 +116,6 @@
                 </div>
             </div>
 
-            <!-- Painel com Gráficos -->
             <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col gap-4">
                 <canvas id="chart" class="bg-white rounded-xl p-2 flex-grow"></canvas>
                 <canvas id="chart-dia" class="bg-white rounded-xl p-2 flex-grow"></canvas>
