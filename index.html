@@ -25,9 +25,12 @@
 
         <!-- Filtros -->
         <div class="grid md:grid-cols-4 gap-4 mb-6">
-            <input id="filter-start" type="date" class="p-2 rounded text-gray-800" placeholder="Data início">
-            <input id="filter-end" type="date" class="p-2 rounded text-gray-800" placeholder="Data fim">
-            <select id="filter-category" class="p-2 rounded text-gray-800">
+            <label for="filter-start" class="sr-only">Data início</label>
+            <input id="filter-start" type="date" class="p-2 rounded text-gray-800" placeholder="Selecione a data inicial" title="Filtrar por data inicial">
+            <label for="filter-end" class="sr-only">Data fim</label>
+            <input id="filter-end" type="date" class="p-2 rounded text-gray-800" placeholder="Selecione a data final" title="Filtrar por data final">
+            <label for="filter-category" class="sr-only">Categoria</label>
+            <select id="filter-category" class="p-2 rounded text-gray-800" title="Filtrar por categoria">
                 <option value="Todas">Todas as Categorias</option>
                 <option value="Aluguel">Aluguel</option>
                 <option value="Água/Luz">Água/Luz</option>
@@ -40,27 +43,27 @@
                 <option value="Gasolina">Gasolina</option>
                 <option value="Outros">Outros</option>
             </select>
-            <button id="export-btn" class="bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded">Exportar
-                JSON</button>
+            <button id="export-btn" class="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-4 rounded shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Exportar gastos em JSON">Exportar JSON</button>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
             <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
                 <h2 class="text-xl font-semibold mb-2">Metas</h2>
-                <input id="goal" type="number" placeholder="Meta de economia (R$)"
-                    class="w-full p-2 rounded mb-2 text-gray-800">
-                <input id="income" type="number" placeholder="Ganhos totais (R$)"
-                    class="w-full p-2 rounded mb-2 text-gray-800">
-                <button id="update-meta-btn"
-                    class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white">Atualizar Metas</button>
+                <label for="goal" class="text-sm">Meta de economia (R$)</label>
+                <input id="goal" type="number" placeholder="Ex: 500" class="w-full p-2 rounded mb-2 text-gray-800" title="Defina sua meta de economia">
+                <label for="income" class="text-sm">Ganhos totais (R$)</label>
+                <input id="income" type="number" placeholder="Ex: 2000" class="w-full p-2 rounded mb-2 text-gray-800" title="Informe seus ganhos totais">
+                <button id="update-meta-btn" class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white font-bold shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Atualizar metas">Atualizar Metas</button>
             </div>
 
             <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
                 <h2 class="text-xl font-semibold mb-2">Novo Gasto</h2>
-                <input id="amount" type="number" placeholder="Valor do Gasto"
-                    class="w-full p-2 rounded mb-2 text-gray-800">
-                <input id="date" type="date" class="w-full p-2 rounded mb-2 text-gray-800">
-                <select id="category" class="w-full p-2 rounded mb-2 text-gray-800">
+                <label for="amount" class="text-sm">Valor do Gasto</label>
+                <input id="amount" type="number" placeholder="Ex: 150" class="w-full p-2 rounded mb-2 text-gray-800" title="Informe o valor do gasto">
+                <label for="date" class="text-sm">Data do Gasto</label>
+                <input id="date" type="date" class="w-full p-2 rounded mb-2 text-gray-800" title="Selecione a data do gasto">
+                <label for="category" class="text-sm">Categoria</label>
+                <select id="category" class="w-full p-2 rounded mb-2 text-gray-800" title="Selecione a categoria do gasto">
                     <option value="Aluguel">Aluguel</option>
                     <option value="Água/Luz">Água/Luz</option>
                     <option value="Internet">Internet</option>
@@ -72,8 +75,7 @@
                     <option value="Gasolina">Gasolina</option>
                     <option value="Outros">Outros</option>
                 </select>
-                <button id="add-expense-btn"
-                    class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white">Adicionar Gasto</button>
+                <button id="add-expense-btn" class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white font-bold shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Adicionar novo gasto">Adicionar Gasto</button>
             </div>
         </div>
 
@@ -122,19 +124,11 @@
             </div>
         </div>
 
-        <!-- Exemplo de card de relatório funcional -->
-        <div class="dashboard-card">
-            <h2 class="text-xl font-bold mb-4">Resumo Financeiro</h2>
-            <div>
-                <span>Total de Gastos:</span>
-                <span id="total-display" class="dashboard-value">R$ 0,00</span>
-            </div>
-            <!-- Adicione outros campos conforme necessário -->
-        </div>
+        <!-- Card duplicado removido para evitar confusão -->
     </div>
 
     <button id="scroll-top-btn"
-        class="fixed bottom-4 right-4 bg-blue-700 text-white p-3 rounded-full shadow-lg">↑</button>
+        class="fixed bottom-8 right-8 bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold p-4 rounded-full shadow-2xl border-4 border-white transition-transform transform hover:scale-110 z-50" title="Voltar ao topo">↑</button>
 
     <div id="toast-container" class="fixed bottom-6 right-6 flex flex-col gap-2 z-50"></div>
 

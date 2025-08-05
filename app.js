@@ -4,22 +4,17 @@ document.addEventListener("DOMContentLoaded", function () {
         const toastContainer = document.getElementById('toast-container');
         const toast = document.createElement('div');
         const isSuccess = type === 'success';
-
-        toast.className = `flex items-center gap-4 px-4 py-3 rounded-2xl shadow-lg text-gray-900 bg-white border-l-4 ${isSuccess ? 'border-green-500' : 'border-red-500'
-            }`;
-
+        toast.className = `flex items-center gap-4 px-4 py-3 rounded-2xl shadow-lg text-gray-900 bg-white border-l-4 ${isSuccess ? 'border-green-500' : 'border-red-500'}`;
         const imgSrc = isSuccess ? './img/Robo-correto.png' : './img/Robo-erro.png';
-        const message = customMessage || (isSuccess ? 'Gasto adicionado com sucesso!' : 'Por favor, preencha todos os campos corretamente.');
-
+        const message = customMessage || (isSuccess ? 'Ação realizada com sucesso!' : 'Preencha todos os campos corretamente.');
         toast.innerHTML = `
             <img src="${imgSrc}" alt="status" class="h-12">
             <div class="flex flex-col">
                 <strong class="text-lg">${message}</strong>
             </div>
         `;
-
         toastContainer.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        setTimeout(() => toast.remove(), 2500);
     }
 
     function clearCorruptedData() {
@@ -72,16 +67,18 @@ document.addEventListener("DOMContentLoaded", function () {
             !validCategories.includes(category)
         ) {
             showToast('error');
+            amountInput.focus();
             return;
         }
 
         expenses.push({ amount, date, category });
         saveAndRender();
-        showToast('success');
+        showToast('success', 'Gasto adicionado com sucesso!');
 
         amountInput.value = '';
         dateInput.value = today;
         categoryInput.value = 'Compras para casa';
+        amountInput.focus();
     }
 
     function updateMeta() {
@@ -100,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (confirm("Tem certeza que deseja remover esta despesa?")) {
             expenses.splice(index, 1);
             saveAndRender();
+            showToast('success', 'Gasto removido com sucesso!');
         }
     }
 
