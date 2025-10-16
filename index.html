@@ -24,73 +24,170 @@
         <h1 class="text-4xl font-bold text-center mb-6">Controle de Gastos</h1>
 
         <!-- Filtros -->
-        <div class="grid md:grid-cols-4 gap-4 mb-6">
-            <label for="filter-start" class="sr-only">Data início</label>
-            <input id="filter-start" type="date" class="p-2 rounded text-gray-800" placeholder="Selecione a data inicial" title="Filtrar por data inicial">
-            <label for="filter-end" class="sr-only">Data fim</label>
-            <input id="filter-end" type="date" class="p-2 rounded text-gray-800" placeholder="Selecione a data final" title="Filtrar por data final">
-            <label for="filter-category" class="sr-only">Categoria</label>
-            <select id="filter-category" class="p-2 rounded text-gray-800" title="Filtrar por categoria">
-                <option value="Todas">Todas as Categorias</option>
-                <option value="Aluguel">Aluguel</option>
-                <option value="Água/Luz">Água/Luz</option>
-                <option value="Internet">Internet</option>
-                <option value="Streaming">Streaming</option>
-                <option value="Compras para casa">Compras para casa</option>
-                <option value="Cosméticos">Cosméticos</option>
-                <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
-                <option value="Contas">Contas</option>
-                <option value="Gasolina">Gasolina</option>
-                <option value="Outros">Outros</option>
-            </select>
-            <button id="export-btn" class="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-4 rounded shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Exportar gastos em JSON">Exportar JSON</button>
+        <div class="bg-blue-900 p-4 rounded-2xl shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Filtrar Gastos</h2>
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="flex flex-col">
+                    <label for="filter-start" class="text-sm mb-1">Data Inicial:</label>
+                    <input id="filter-start" type="date" class="p-2 rounded text-gray-800" title="Filtrar a partir desta data">
+                </div>
+                <div class="flex flex-col">
+                    <label for="filter-end" class="text-sm mb-1">Data Final:</label>
+                    <input id="filter-end" type="date" class="p-2 rounded text-gray-800" title="Filtrar até esta data">
+                </div>
+                <div class="flex flex-col">
+                    <label for="filter-category" class="text-sm mb-1">Categoria:</label>
+                    <select id="filter-category" class="p-2 rounded text-gray-800" title="Filtrar por categoria">
+                        <option value="Todas">Todas as Categorias</option>
+                        <option value="Aluguel">Aluguel</option>
+                        <option value="Água/Luz">Água/Luz</option>
+                        <option value="Internet">Internet</option>
+                        <option value="Streaming">Streaming</option>
+                        <option value="Compras para casa">Compras para casa</option>
+                        <option value="Cosméticos">Cosméticos</option>
+                        <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
+                        <option value="Contas">Contas</option>
+                        <option value="Gasolina">Gasolina</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div class="flex flex-col justify-end">
+                    <div class="flex gap-2">
+                        <button id="export-btn" class="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-4 rounded shadow-lg border-2 border-white transition-transform transform hover:scale-105 flex-1" title="Baixar gastos em formato Excel">
+                            <span class="hidden md:inline">Exportar Gastos</span>
+                            <span class="md:hidden">📥</span>
+                        </button>
+                        <button id="clear-filters-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Limpar filtros">
+                            <span class="hidden md:inline">Limpar Filtros</span>
+                            <span class="md:hidden">🔄</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <p class="text-xs mt-2 text-gray-300">Os filtros são aplicados automaticamente ao selecionar</p>
+        </div>
+            <button id="reset-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Limpar todas as informações">Limpar Dados</button>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
             <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
                 <h2 class="text-xl font-semibold mb-2">Metas</h2>
-                <label for="goal" class="text-sm">Meta de economia (R$)</label>
-                <input id="goal" type="number" placeholder="Ex: 500" class="w-full p-2 rounded mb-2 text-gray-800" title="Defina sua meta de economia">
-                <label for="income" class="text-sm">Ganhos totais (R$)</label>
-                <input id="income" type="number" placeholder="Ex: 2000" class="w-full p-2 rounded mb-2 text-gray-800" title="Informe seus ganhos totais">
-                <button id="update-meta-btn" class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white font-bold shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Atualizar metas">Atualizar Metas</button>
+                <div class="mb-4">
+                    <label for="income" class="text-sm block mb-1">Ganhos totais do mês (R$)</label>
+                    <input id="income" type="number" min="0" step="0.01" placeholder="Ex: 2000" 
+                        class="w-full p-2 rounded mb-1 text-gray-800" 
+                        title="Informe seus ganhos mensais totais">
+                    <p class="text-xs text-gray-300">Digite o valor total que você recebe no mês</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="goal" class="text-sm block mb-1">Meta de economia (R$)</label>
+                    <input id="goal" type="number" min="0" step="0.01" placeholder="Ex: 500" 
+                        class="w-full p-2 rounded mb-1 text-gray-800" 
+                        title="Quanto você quer economizar">
+                    <p class="text-xs text-gray-300">Quanto você quer guardar neste mês</p>
+                </div>
+
+                <div id="progress-container" class="mb-4 hidden">
+                    <label class="text-sm block mb-2">Progresso da Meta</label>
+                    <div class="w-full bg-gray-700 rounded-full h-4 mb-1">
+                        <div id="saving-progress" class="bg-green-500 h-4 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-xs text-center text-gray-300"></p>
+                </div>
+
+                <button id="update-meta-btn" 
+                    class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white font-bold shadow-lg border-2 border-white transition-transform transform hover:scale-105" 
+                    title="Atualizar metas">
+                    Atualizar Metas
+                </button>
             </div>
 
             <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
-                <h2 class="text-xl font-semibold mb-2">Novo Gasto</h2>
-                <label for="amount" class="text-sm">Valor do Gasto</label>
-                <input id="amount" type="number" placeholder="Ex: 150" class="w-full p-2 rounded mb-2 text-gray-800" title="Informe o valor do gasto">
-                <label for="date" class="text-sm">Data do Gasto</label>
-                <input id="date" type="date" class="w-full p-2 rounded mb-2 text-gray-800" title="Selecione a data do gasto">
-                <label for="category" class="text-sm">Categoria</label>
-                <select id="category" class="w-full p-2 rounded mb-2 text-gray-800" title="Selecione a categoria do gasto">
-                    <option value="Aluguel">Aluguel</option>
-                    <option value="Água/Luz">Água/Luz</option>
-                    <option value="Internet">Internet</option>
-                    <option value="Streaming">Streaming</option>
-                    <option value="Compras para casa">Compras para casa</option>
-                    <option value="Cosméticos">Cosméticos</option>
-                    <option value="Pizza, lanches, doces">Pizza, lanches, doces</option>
-                    <option value="Contas">Contas</option>
-                    <option value="Gasolina">Gasolina</option>
-                    <option value="Outros">Outros</option>
-                </select>
-                <button id="add-expense-btn" class="bg-green-500 hover:bg-green-600 w-full py-2 rounded text-white font-bold shadow-lg border-2 border-white transition-transform transform hover:scale-105" title="Adicionar novo gasto">Adicionar Gasto</button>
+                <h2 class="text-xl font-semibold mb-4">Novo Gasto</h2>
+                
+                <div class="mb-4">
+                    <label for="amount" class="text-sm block mb-1">Valor do Gasto (R$)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 text-gray-600">R$</span>
+                        <input id="amount" 
+                            type="number" 
+                            min="0.01" 
+                            step="0.01" 
+                            placeholder="0,00" 
+                            class="w-full p-2 pl-8 rounded text-gray-800" 
+                            title="Digite o valor do gasto">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="date" class="text-sm block mb-1">Data do Gasto</label>
+                    <input id="date" 
+                        type="date" 
+                        class="w-full p-2 rounded text-gray-800" 
+                        title="Selecione quando o gasto foi realizado">
+                    <p class="text-xs text-gray-300 mt-1">Você pode selecionar datas futuras para contas a pagar</p>
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="text-sm block mb-1">Categoria do Gasto</label>
+                    <select id="category" class="w-full p-2 rounded text-gray-800" title="Escolha a categoria do gasto">
+                        <option value="" disabled selected>Selecione uma categoria</option>
+                        <option value="Aluguel">🏠 Aluguel</option>
+                        <option value="Água/Luz">💡 Água/Luz</option>
+                        <option value="Internet">📡 Internet</option>
+                        <option value="Streaming">📺 Streaming</option>
+                        <option value="Compras para casa">🛒 Compras para casa</option>
+                        <option value="Cosméticos">💄 Cosméticos</option>
+                        <option value="Pizza, lanches, doces">🍕 Pizza, lanches, doces</option>
+                        <option value="Contas">💰 Contas</option>
+                        <option value="Gasolina">⛽ Gasolina</option>
+                        <option value="Outros">📝 Outros</option>
+                    </select>
+                </div>
+
+                <button id="add-expense-btn" 
+                    class="bg-green-500 hover:bg-green-600 w-full py-3 rounded-lg text-white font-bold shadow-lg border-2 border-white transition-transform transform hover:scale-105 flex items-center justify-center gap-2" 
+                    title="Adicionar novo gasto">
+                    <span>💾</span> Salvar Gasto
+                </button>
             </div>
         </div>
 
-        <div class="mt-8 bg-white text-gray-800 rounded-2xl overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-blue-700 text-white">
-                    <tr>
-                        <th class="p-2 text-left">Valor</th>
-                        <th class="p-2 text-left">Categoria</th>
-                        <th class="p-2 text-left">Data</th>
-                        <th class="p-2 text-left">Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="expense-table"></tbody>
-            </table>
+        <div class="mt-8 bg-white text-gray-800 rounded-2xl overflow-hidden shadow-lg">
+            <div class="p-4 bg-blue-900 text-white">
+                <h2 class="text-xl font-bold">Lista de Gastos</h2>
+                <p class="text-sm text-gray-300">Clique nos títulos das colunas para ordenar</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-blue-700 text-white">
+                        <tr>
+                            <th class="p-3 text-left cursor-pointer hover:bg-blue-600" data-sort="amount">
+                                Valor <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="p-3 text-left cursor-pointer hover:bg-blue-600" data-sort="category">
+                                Categoria <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="p-3 text-left cursor-pointer hover:bg-blue-600" data-sort="date">
+                                Data <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="p-3 text-left">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expense-table"></tbody>
+                    <tfoot class="bg-gray-100 font-bold">
+                        <tr>
+                            <td class="p-3 border-t-2" id="total-row">Total: R$ 0,00</td>
+                            <td class="p-3 border-t-2" colspan="3" id="category-summary"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="no-expenses" class="hidden p-8 text-center text-gray-500">
+                <p class="text-xl">Nenhum gasto encontrado</p>
+                <p class="text-sm">Adicione um novo gasto usando o formulário acima</p>
+            </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 mt-8 items-stretch">
