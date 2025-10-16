@@ -190,10 +190,86 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateDisplays() {
         const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        const saving = income - total;
+        const percentage = goal > 0 ? (saving / goal) * 100 : 0;
+
+        // Atualiza os displays principais
         document.getElementById('total-display').textContent = `R$ ${total.toFixed(2)}`;
         document.getElementById('goal-display').textContent = `R$ ${goal.toFixed(2)}`;
         document.getElementById('income-display').textContent = `R$ ${income.toFixed(2)}`;
-        document.getElementById('saving-display').textContent = `R$ ${(income - total).toFixed(2)}`;
+        document.getElementById('saving-display').textContent = `R$ ${saving.toFixed(2)}`;
+
+        // Atualiza o progresso
+        if (goal > 0) {
+            document.getElementById('progress-container').classList.remove('hidden');
+            document.getElementById('saving-progress').style.width = `${Math.min(percentage, 100)}%`;
+            document.getElementById('progress-percentage').textContent = `${percentage.toFixed(1)}%`;
+            document.getElementById('progress-text').textContent = 
+                `Você ${saving >= goal ? 'atingiu' : 'precisa economizar'} R$ ${Math.abs(goal - saving).toFixed(2)} ${saving >= goal ? 'além da' : 'para atingir a'} meta`;
+        } else {
+            document.getElementById('progress-container').classList.add('hidden');
+        }
+
+        // Calcula e atualiza a saúde financeira
+        updateFinancialHealth(total, income, saving);
+
+        // Atualiza a dica financeira
+        updateFinancialTip(total, income, saving);
+    }
+
+    function updateFinancialHealth(total, income, saving) {
+        const healthIndicator = document.getElementById('financial-health');
+        const healthDetails = document.getElementById('health-details');
+        
+        // Calcula o percentual de gastos em relação à renda
+        const spendingPercentage = income > 0 ? (total / income) * 100 : 0;
+        
+        let status, color, message;
+        
+        if (spendingPercentage <= 70) {
+            status = "Excelente";
+            color = "bg-green-500";
+            message = "Seus gastos estão bem controlados! Continue assim!";
+        } else if (spendingPercentage <= 85) {
+            status = "Boa";
+            color = "bg-blue-500";
+            message = "Seus gastos estão dentro do esperado, mas fique atento.";
+        } else if (spendingPercentage <= 100) {
+            status = "Atenção";
+            color = "bg-yellow-500";
+            message = "Seus gastos estão se aproximando do limite da sua renda.";
+        } else {
+            status = "Crítica";
+            color = "bg-red-500";
+            message = "Seus gastos ultrapassaram sua renda. Considere reduzir despesas.";
+        }
+
+        healthIndicator.className = `px-3 py-1 rounded-full text-sm font-bold text-white ${color}`;
+        healthIndicator.textContent = status;
+        healthDetails.textContent = message;
+    }
+
+    function updateFinancialTip(total, income, saving) {
+        const tips = [
+            "💡 Separe 20% da sua renda para emergências e investimentos.",
+            "💡 Revise suas despesas mensais para identificar gastos desnecessários.",
+            "💡 Compare preços antes de fazer compras para economizar.",
+            "💡 Estabeleça metas realistas de economia.",
+            "💡 Mantenha suas despesas organizadas por categoria."
+        ];
+
+        const tipElement = document.getElementById('financial-tip');
+        
+        // Escolhe uma dica baseada na situação financeira
+        if (income === 0) {
+            tipElement.textContent = "💡 Comece definindo sua renda mensal para um melhor planejamento.";
+        } else if (total > income) {
+            tipElement.textContent = "💡 Considere revisar seus gastos para não ultrapassar sua renda.";
+        } else {
+            // Escolhe uma dica aleatória do array
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            tipElement.textContent = randomTip;
+        }
     }
 
     function scrollToTop() {
@@ -226,8 +302,73 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('scroll-top-btn').addEventListener('click', scrollToTop);
     document.getElementById('export-btn').addEventListener('click', exportData);
     // Função para resetar todos os dados
+    // Gerenciamento do menu de dados
+    document.getElementById('manage-data-btn').addEventListener('click', function(e) {
+        const menu = document.getElementById('manage-data-menu');
+        menu.classList.toggle('hidden');
+        e.stopPropagation();
+    });
+
+    // Fecha o menu ao clicar fora dele
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('manage-data-menu');
+        if (!menu.contains(e.target) && !e.target.matches('#manage-data-btn')) {
+            menu.classList.add('hidden');
+        }
+    });
+
+    // Arquivar dados antigos
+    function archiveOldData() {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const oldExpenses = expenses.filter(exp => new Date(exp.date) < thirtyDaysAgo);
+        const currentExpenses = expenses.filter(exp => new Date(exp.date) >= thirtyDaysAgo);
+        
+        if (oldExpenses.length === 0) {
+            showToast('error', 'Não há dados antigos para arquivar');
+            return;
+        }
+
+        const archive = JSON.parse(localStorage.getItem('archived_expenses') || '[]');
+        archive.push(...oldExpenses);
+        localStorage.setItem('archived_expenses', JSON.stringify(archive));
+        
+        expenses = currentExpenses;
+        saveAndRender();
+        showToast('success', `${oldExpenses.length} gastos antigos foram arquivados`);
+    }
+
+    // Fazer backup dos dados
+    function backupData() {
+        const backup = {
+            expenses: expenses,
+            archived: JSON.parse(localStorage.getItem('archived_expenses') || '[]'),
+            goal: goal,
+            income: income,
+            lastBackup: new Date().toISOString()
+        };
+
+        const dataStr = JSON.stringify(backup, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = 'controle_gastos_backup_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '-') + '.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        
+        showToast('success', 'Backup realizado com sucesso!');
+    }
+
+    // Limpar dados
     function resetData() {
-        if (confirm("Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.")) {
+        if (confirm("⚠️ Atenção: Você está prestes a limpar todos os dados.\n\nRecomendamos fazer um backup antes de prosseguir.\n\nDeseja continuar?")) {
+            // Oferece fazer backup antes de limpar
+            if (confirm("Deseja fazer um backup dos dados antes de limpar?")) {
+                backupData();
+            }
+
             // Limpa as variáveis globais
             expenses = [];
             goal = 0;
@@ -236,29 +377,25 @@ document.addEventListener("DOMContentLoaded", function () {
             // Limpa o localStorage
             localStorage.clear();
             
-            // Reseta os campos de meta e ganhos
+            // Reseta os campos
             document.getElementById('goal').value = '';
             document.getElementById('income').value = '';
-            
-            // Reseta os campos de novo gasto
             document.getElementById('amount').value = '';
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
             document.getElementById('category').value = 'Compras para casa';
-            
-            // Limpa os filtros
             document.getElementById('filter-start').value = '';
             document.getElementById('filter-end').value = '';
             document.getElementById('filter-category').value = 'Todas';
             
-            // Atualiza todos os displays e gráficos
-            renderExpenses();
-            updateDisplays();
-            updateCharts();
-            updateMonthlyChart();
-            
+            // Atualiza a interface
+            saveAndRender();
             showToast('success', 'Todos os dados foram limpos com sucesso!');
         }
     }
+
+    // Event listeners para os novos botões
+    document.getElementById('archive-old-btn').addEventListener('click', archiveOldData);
+    document.getElementById('backup-btn').addEventListener('click', backupData);
 
     document.getElementById('filter-start').addEventListener('change', saveAndRender);
     document.getElementById('filter-end').addEventListener('change', saveAndRender);

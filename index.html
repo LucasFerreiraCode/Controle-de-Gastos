@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <h1 class="text-4xl font-bold text-center mb-6">Controle de Gastos</h1>
+        <h1 class="text-4xl font-bold text-center mb-6"></h1>
 
         <!-- Filtros -->
         <div class="bg-blue-900 p-4 rounded-2xl shadow-lg mb-6">
@@ -191,33 +191,99 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 mt-8 items-stretch">
-            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col items-center text-center">
-                <h2 class="text-2xl font-bold mb-4">Resumo Financeiro</h2>
-                <div class="mb-2">
-                    <span class="font-semibold">Total de Gastos:</span>
-                    <span id="total-display" class="text-lg font-bold text-yellow-400">R$ 0,00</span>
+            <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col">
+                <h2 class="text-2xl font-bold mb-4 text-center">Resumo Financeiro</h2>
+                
+                <!-- Cards com informações principais -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-blue-900/50 p-4 rounded-xl">
+                        <h3 class="text-sm text-gray-300 mb-1">Ganhos do Mês</h3>
+                        <span id="income-display" class="text-xl font-bold text-green-400">R$ 0,00</span>
+                    </div>
+                    <div class="bg-blue-900/50 p-4 rounded-xl">
+                        <h3 class="text-sm text-gray-300 mb-1">Total de Gastos</h3>
+                        <span id="total-display" class="text-xl font-bold text-red-400">R$ 0,00</span>
+                    </div>
+                    <div class="bg-blue-900/50 p-4 rounded-xl">
+                        <h3 class="text-sm text-gray-300 mb-1">Meta de Economia</h3>
+                        <span id="goal-display" class="text-xl font-bold text-yellow-400">R$ 0,00</span>
+                    </div>
+                    <div class="bg-blue-900/50 p-4 rounded-xl">
+                        <h3 class="text-sm text-gray-300 mb-1">Saldo Disponível</h3>
+                        <span id="saving-display" class="text-xl font-bold text-green-400">R$ 0,00</span>
+                    </div>
                 </div>
-                <div class="mb-2">
-                    <span class="font-semibold">Meta:</span>
-                    <span id="goal-display" class="text-lg font-bold text-yellow-400">R$ 0,00</span>
+
+                <!-- Barra de progresso da meta -->
+                <div id="progress-container" class="mb-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Progresso da Meta</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="w-full bg-blue-900/50 rounded-full h-3">
+                        <div id="saving-progress" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-xs text-gray-300 mt-1 text-center"></p>
                 </div>
-                <div class="mb-2">
-                    <span class="font-semibold">Ganhos:</span>
-                    <span id="income-display" class="text-lg font-bold text-yellow-400">R$ 0,00</span>
+
+                <!-- Resumo mensal -->
+                <div id="monthly-summary" class="flex-grow">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold">Resumo Mensal</h3>
+                        <select id="chart-period" class="bg-blue-900/50 text-white text-sm p-1 rounded">
+                            <option value="7">Últimos 7 dias</option>
+                            <option value="15">Últimos 15 dias</option>
+                            <option value="30" selected>Últimos 30 dias</option>
+                        </select>
+                    </div>
+                    <canvas id="monthly-chart" class="w-full"></canvas>
                 </div>
-                <div class="mb-4">
-                    <span class="font-semibold">Poupança Esperada:</span>
-                    <span id="saving-display" class="text-lg font-bold text-yellow-400">R$ 0,00</span>
-                </div>
-                <div id="monthly-summary" class="mt-4 flex-grow">
-                    <h3 class="text-lg font-semibold mb-2">Resumo Mensal:</h3>
-                    <canvas id="monthly-chart" class="w-full h-40"></canvas>
+
+                <!-- Dicas financeiras -->
+                <div class="mt-4 text-sm bg-blue-900/50 p-3 rounded-xl">
+                    <p id="financial-tip" class="text-gray-300">💡 Dica: Mantenha seus gastos organizados por categoria para um melhor controle financeiro.</p>
                 </div>
             </div>
 
             <div class="bg-blue-800 p-6 rounded-2xl shadow-lg w-full h-full flex flex-col gap-4">
-                <canvas id="chart" class="bg-white rounded-xl p-2 flex-grow"></canvas>
-                <canvas id="chart-dia" class="bg-white rounded-xl p-2 flex-grow"></canvas>
+                <!-- Indicador de Saúde Financeira -->
+                <div class="bg-blue-900/50 p-4 rounded-xl mb-2">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold">Saúde Financeira</h3>
+                        <div id="financial-health" class="px-3 py-1 rounded-full text-sm font-bold">
+                            Calculando...
+                        </div>
+                    </div>
+                    <div id="health-details" class="text-sm text-gray-300"></div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="bg-white rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-gray-800 font-bold">Distribuição por Categoria</h3>
+                        <select id="chart-type" class="text-sm border rounded p-1">
+                            <option value="pie">Gráfico de Pizza</option>
+                            <option value="bar">Gráfico de Barras</option>
+                        </select>
+                    </div>
+                    <canvas id="chart" class="flex-grow"></canvas>
+                </div>
+
+                <div class="bg-white rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-gray-800 font-bold">Evolução dos Gastos</h3>
+                        <div class="flex gap-2">
+                            <button id="prev-period" class="text-blue-600 hover:text-blue-800">←</button>
+                            <span id="period-label" class="text-sm">Este Mês</span>
+                            <button id="next-period" class="text-blue-600 hover:text-blue-800">→</button>
+                        </div>
+                    </div>
+                    <canvas id="chart-dia" class="flex-grow"></canvas>
+                </div>
+
+                <div class="text-sm text-gray-300 text-center bg-blue-900/50 p-2 rounded-xl">
+                    💡 Passe o mouse sobre os gráficos para ver mais detalhes
+                </div>
             </div>
         </div>
 
